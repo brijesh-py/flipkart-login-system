@@ -36,9 +36,9 @@ Flipkart User Management System is a Python command-line application that allows
 
 ## Contributors
 
-- Brijesh GP <brijeshpy@duck.com>
+- Brijesh GP <brijeshsoftdev@duck.com>
 
-Thanks to Visit here.
+#### Thanks for visiting here.
 
 
 
