@@ -1,7 +1,7 @@
 # Flipkart User Management System
 
 Flipkart User Management System is a Python command-line application that allows users to register, login, view and edit their profiles, and delete their accounts.!
-[flipkark-1](https://github.com/brijesh-py/flipkart-login-system/assets/134686367/4f4d6524-9faf-4cc9-857e-f624a7b50209)
+![flipkark-1](https://github.com/brijesh-py/flipkart-login-system/assets/134686367/a2be974f-0019-44ff-949a-e1535b61b81c)
 ![flipkark-2](https://github.com/brijesh-py/flipkart-login-system/assets/134686367/16c02968-0849-461d-a149-24968ae57981)
 ![flipkark-3](https://github.com/brijesh-py/flipkart-login-system/assets/134686367/20dd6784-fe05-4e07-8f3f-a8f9fc271bec)
 
