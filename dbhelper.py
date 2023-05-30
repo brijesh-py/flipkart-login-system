@@ -1,74 +1,72 @@
 import mysql.connector
-from mysql.connector import Error
 
 class DBhelper:
     def __init__(self):
         self.conn = self.create_connection()
+        self.cursor = self.conn.cursor()
 
     def create_connection(self):
-        try:
-            connection = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password='',
-                database='my_data'
-            )
-            return connection
-        except Error as e:
-            print(f"Error connecting to database: {e}")
-            sys.exit()
+        response = mysql.connector.connect(host='localhost', user='root', password='', database='my_data')
+        return response
 
-    def execute_query(self, query, params=None):
-        try:
-            cursor = self.conn.cursor()
-            if params:
-                cursor.execute(query, params)
-            else:
-                cursor.execute(query)
-            self.conn.commit()
-            return cursor
-        except Error as e:
-            print(f"Error executing query: {e}")
-            return None
+    def close_connection(self):
+        self.conn.close()
+        return True
 
-    def register(self, name, email, password):
-        try:
-            query = "INSERT INTO users (name, email, password) VALUES (%s, %s, %s)"
-            params = (name, email, password)
-            self.execute_query(query, params)
+    def see_profile(self, email):
+        query = f"SELECT * FROM users WHERE email = %s"
+        values = (email,)
+        self.cursor.execute(query, values)
+        return  self.cursor.fetchall()
+
+    def edit_profile(self, email, update_name, update_email, update_password):
+        query = "UPDATE users SET name = %s , email = %s , password = %s WHERE email = %s"
+        values = (update_name, update_email, update_password, email)
+        self.cursor.execute(query, values)
+        self.conn.commit()
+
+        query = f"SELECT * FROM users WHERE email = %s"
+        values = (update_email,)
+        self.cursor.execute(query, values)
+
+        if self.cursor.fetchone():
             return True
-        except Error as e:
-            print(f"Error registering user: {e}")
+        else:
+            return False
+
+    def delete_account(self, email, password):
+        query = "DELETE FROM users WHERE email = %s AND password = %s"
+        values = (email, password)
+        self.cursor.execute(query, values)
+        self.conn.commit()
+
+        query = f"SELECT * FROM users WHERE email = %s"
+        values = (email,)
+        self.cursor.execute(query, values)
+
+        if not self.cursor.fetchone():
+            return True
+        else:
             return False
 
     def login(self, email, password):
         query = "SELECT * FROM users WHERE email = %s AND password = %s"
-        params = (email, password)
-        cursor = self.execute_query(query, params)
-        if cursor:
-            response = cursor.fetchall()
-            return response
+        values = (email, password)
+        self.cursor.execute(query, values)
+        response = self.cursor.fetchall()
+        return response
+
+    def register(self, name, email, password):
+        query = """
+        INSERT INTO users (name, email, password) VALUES (%s, %s, %s)
+        """
+        values = (name, email, password)
+        initial_row_count = self.cursor.rowcount
+        self.cursor.execute(query, values)
+        self.conn.commit()
+
+        final_row_count = self.cursor.rowcount
+        if final_row_count > initial_row_count:
+            return True
         else:
-            return None
-
-    def see_profile(self, user_email):
-        query = "SELECT * FROM users WHERE email = %s"
-        params = (user_email,)
-        cursor = self.execute_query(query, params)
-        if cursor:
-            response = cursor.fetchall()
-            return response
-        else:
-            return None
-
-    def edit_profile(self, email, update_name, update_email, update_password):
-        query = "UPDATE users SET name = %s, email = %s, password = %s WHERE email = %s"
-        params = (update_name, update_email, update_password, email)
-        success = self.execute_query(query, params)
-        return success is not None
-
-    def delete_account(self, email, password):
-        query = "DELETE FROM users WHERE email = %s AND password = %s"
-        params = (email, password)
-        success = self.execute_query(query, params)
-        return success is not None
+            return False

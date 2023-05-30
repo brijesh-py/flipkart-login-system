@@ -17,7 +17,12 @@ class Flipkart:
         elif user_input == '2':
             self.register()
         else:
-            sys.exit()
+            self.logout()
+
+    def logout(self):
+        self.db.close_connection()
+        print("By by!")
+        sys.exit()
 
     def login_menu(self, email, password):
         user_input = input("""
@@ -28,20 +33,22 @@ class Flipkart:
         """)
 
         if user_input == '1':
-            self.see_profile(email)
+            self.see_profile(email, password)
         elif user_input == '2':
             self.edit_profile(email)
         elif user_input == '3':
             self.delete_account(email, password)
         elif user_input == '4':
-            sys.exit()
+            self.logout()
 
-    def see_profile(self, email):
+    def see_profile(self, email, password):
         response = self.db.see_profile(email)
         if response:
-            print(f"Name is {response[0][1]}, Email is {response[0][2]}, and Password is {response[0][3]}")
+            print(f"Name is {response[0][1]}, Email is {response[0][2]} and Password is {response[0][3]}")
+            self.login_menu(email, password)
         else:
             print("Profile not found.")
+            self.see_profile(email, password)
 
     def edit_profile(self, email):
         update_name = input("Enter Name: ")
@@ -50,15 +57,19 @@ class Flipkart:
         success = self.db.edit_profile(email, update_name, update_email, update_password)
         if success:
             print("Profile updated successfully.")
+            self.login()
         else:
             print("Failed to update profile. Please try again.")
+            self.edit_profile(email)
 
     def delete_account(self, email, password):
         success = self.db.delete_account(email, password)
         if success:
             print("Account deleted successfully.")
+            self.menu()
         else:
             print("Failed to delete account.")
+            self.delete_account(email, password)
 
     def register(self):
         name = input("Enter the name: ")
@@ -82,6 +93,5 @@ class Flipkart:
         else:
             print("Invalid email or password.")
             self.login()
-
 
 obj = Flipkart()
